@@ -2,4 +2,21 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Tema Claro -->
+    <color name="md_theme_light_primary">#6750A4</color> <!-- Un morado elegante -->
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_background">#FDFBFF</color>
+    <color name="md_theme_light_surface">#EEEEEE</color>
+
+    <!-- Tema Oscuro -->
+    <color name="md_theme_dark_primary">#D0BCFF</color>
+    <color name="md_theme_dark_onPrimary">#381E72</color>
+    <color name="md_theme_dark_background">#1C1B1F</color>
+    <color name="md_theme_dark_surface">#2D2C31</color> <!-- Para el fondo de las tarjetas -->
+
+    <!-- Colores para tu algoritmo de Score (El semáforo) -->
+    <color name="estado_ideal">#4CAF50</color> <!-- Verde -->
+    <color name="estado_medio">#FF9800</color> <!-- Naranja/Amarillo -->
+    <color name="estado_peligro">#F44336</color> <!-- Rojo -->
 </resources>
