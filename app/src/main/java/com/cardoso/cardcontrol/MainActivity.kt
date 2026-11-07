@@ -48,6 +48,11 @@ class MainActivity : AppCompatActivity() {
                 // ¡Aquí actualizaremos los números de "Estrategia de Score"!
             }
         })
+
+        binding.topAppBar.setOnClickListener {
+            startActivity(android.content.Intent(this, AddTarjetaActivity::class.java))
+        }
+
     }
 
     // --- EL MOTOR MATEMÁTICO BIDIRECCIONAL ---
