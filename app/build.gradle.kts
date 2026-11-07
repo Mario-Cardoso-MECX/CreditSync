@@ -50,4 +50,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     implementation("com.google.android.material:material:1.12.0")
+    // Librería para el efecto Cover Flow / Tarjetas apiladas en 3D
+    implementation("com.github.mohammadatif:Animatoo:master") // Animaciones extra
+    implementation("com.github.sparrow007:carouselrecyclerview:1.2.6")
 }

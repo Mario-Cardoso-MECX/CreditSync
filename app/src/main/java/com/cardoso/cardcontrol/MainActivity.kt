@@ -1,10 +1,10 @@
 package com.cardoso.cardcontrol
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.carousel.CarouselLayoutManager
-import com.google.android.material.carousel.HeroCarouselStrategy
+import androidx.viewpager2.widget.ViewPager2
 import com.cardoso.cardcontrol.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.topAppBar)
 
-        // 1. Configurar Menú Hamburguesa
         val toggle = ActionBarDrawerToggle(
             this, binding.drawerLayout, binding.topAppBar,
             R.string.app_name, R.string.app_name
@@ -26,24 +25,64 @@ class MainActivity : AppCompatActivity() {
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
-        // 2. Configurar el Carrusel Apilado (Cover Flow)
-        val carouselLayoutManager = CarouselLayoutManager(HeroCarouselStrategy())
-        binding.rvTarjetas.layoutManager = carouselLayoutManager
-        binding.rvTarjetas.setHasFixedSize(true)
-
-        // 3. Crear datos simulados basados en tu Excel
-        // Aquí simulamos que ya consultamos Room y las ordenamos por "Frecuencia de Uso"
         val misTarjetas = listOf(
-            // Posición 0: La más usada (Estará al frente/centro al abrir la app)
-            Tarjeta(1, "Nubank", "8760", 8600.0, 0.10, "#8A05BE"), // Morado Nu
-            // Posición 1: Segunda más usada (Se asomará por la derecha)
-            Tarjeta(2, "Klar", "4006", 33000.0, 0.39, "#000000"), // Negro Klar
-            // Posición 2: Tercera (Quedará oculta hasta hacer scroll)
-            Tarjeta(3, "Mercado Pago", "0474", 6400.0, 0.0, "#009EE3") // Azul MP
+            Tarjeta(1, "Nubank", "8760", 8600.0, 0.10, "#8A05BE"),
+            Tarjeta(2, "Klar", "4006", 33000.0, 0.39, "#000000"),
+            Tarjeta(3, "Mercado Pago", "0474", 6400.0, 0.0, "#009EE3")
         )
 
-        // 4. Conectar el Adapter al RecyclerView
         val adapter = TarjetaAdapter(misTarjetas)
-        binding.rvTarjetas.adapter = adapter
+
+        // --- CONFIGURACIÓN DEL MAZO 3D (STACK) ---
+        binding.vpTarjetas.adapter = adapter
+
+        // Cargamos hasta 3 tarjetas extra ocultas detrás para que el efecto sea fluido
+        binding.vpTarjetas.offscreenPageLimit = 3
+
+        // Aquí aplicamos la matemática para apilarlas
+        binding.vpTarjetas.setPageTransformer(StackPageTransformer())
+
+        // Listener para saber qué tarjeta quedó al frente (Posición 0, 1, 2...)
+        binding.vpTarjetas.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                val tarjetaActiva = misTarjetas[position]
+                // ¡Aquí actualizaremos los números de "Estrategia de Score"!
+            }
+        })
+    }
+
+    // --- EL MOTOR QUE LAS ENCIMA UNA DETRÁS DE OTRA ---
+    inner class StackPageTransformer : ViewPager2.PageTransformer {
+        override fun transformPage(page: View, position: Float) {
+            // position <= 0: La tarjeta de enfrente o la que estás deslizando para quitarla
+            // position > 0: Las tarjetas "esperando a salir" que están detrás
+
+            if (position <= 0f) {
+                page.translationX = 0f
+                page.translationZ = 0f // Al frente en 3D
+                page.alpha = 1f + position // Se desvanece al deslizarla
+                page.scaleX = 1f
+                page.scaleY = 1f
+            } else {
+                // 1. Cancelamos su posición natural (que sería a la derecha) y las traemos detrás de la central
+                page.translationX = -page.width * position
+
+                // 2. Las "asomamos" un poco hacia la derecha para que sepas que ahí están
+                val asomarsePorLado = 60f * position
+                page.translationX += asomarsePorLado
+
+                // 3. Las hacemos ligeramente más pequeñas (Efecto profundidad)
+                val scale = 1f - (0.1f * position)
+                page.scaleX = scale
+                page.scaleY = scale
+
+                // 4. Las oscurecemos un poco
+                page.alpha = 1f - (0.2f * position)
+
+                // 5. Las mandamos hacia atrás en la capa Z real
+                page.translationZ = -position * 10f
+            }
+        }
     }
 }

@@ -23,18 +23,17 @@
             app:titleTextColor="?attr/colorOnPrimary"
             app:title="CreditSync" />
 
-        <!-- Carrusel de Tarjetas Apiladas (Cover Flow) -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvTarjetas"
+        <!-- Carrusel de Tarjetas Apiladas (Efecto Mazo / Stack 3D) -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vpTarjetas"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="220dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:orientation="horizontal"
             android:clipToPadding="false"
             android:clipChildren="false"
-            app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager"
-            tools:listitem="@layout/item_tarjeta" />
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp" />
 
         <!-- Panel de Detalles de la Tarjeta Seleccionada -->
         <ScrollView

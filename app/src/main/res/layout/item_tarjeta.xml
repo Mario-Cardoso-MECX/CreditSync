@@ -1,98 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- El contenedor raíz OBLIGATORIO para el carrusel de Material Design -->
-<com.google.android.material.carousel.MaskableFrameLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="280dp"
-    android:layout_height="180dp"
-    android:layout_marginEnd="8dp"
-    app:shapeAppearance="?attr/shapeAppearanceCornerExtraLarge">
+    android:layout_width="match_parent"
+    android:layout_height="190dp"
+    android:layout_marginEnd="12dp"
+    app:strokeWidth="0dp"
+    app:cardElevation="8dp"
+    app:cardCornerRadius="16dp">
 
-    <!-- Ahora sí, dentro del Maskable, ponemos tu tarjeta -->
-    <com.google.android.material.card.MaterialCardView
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bgTarjeta"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:strokeWidth="0dp"
-        app:cardElevation="4dp">
+        android:background="?attr/colorPrimary"
+        android:padding="20dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bgTarjeta"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/colorPrimary"
-            android:padding="20dp">
+        <!-- Nombre del Banco -->
+        <TextView
+            android:id="@+id/tvBanco"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Nubank" />
 
-            <!-- Nombre del Banco -->
-            <TextView
-                android:id="@+id/tvBanco"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Nubank" />
+        <!-- Simulación del Chip -->
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@android:drawable/ic_secure"
+            app:tint="?attr/colorOnPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Simulación del Chip -->
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_secure"
-                app:tint="?attr/colorOnPrimary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <!-- Últimos 4 Dígitos -->
+        <TextView
+            android:id="@+id/tvNumeros"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.2"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="22sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvLimiteEtiqueta"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvBanco"
+            tools:text="•••• •••• •••• 8760" />
 
-            <!-- Últimos 4 Dígitos -->
-            <TextView
-                android:id="@+id/tvNumeros"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:letterSpacing="0.2"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="22sp"
-                app:layout_constraintBottom_toTopOf="@+id/tvLimiteEtiqueta"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvBanco"
-                tools:text="•••• •••• •••• 8760" />
+        <!-- Etiqueta Límite -->
+        <TextView
+            android:id="@+id/tvLimiteEtiqueta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Límite:"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="12sp"
+            android:alpha="0.8"
+            app:layout_constraintBottom_toTopOf="@+id/tvLimiteValor"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- Etiqueta Límite -->
-            <TextView
-                android:id="@+id/tvLimiteEtiqueta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Límite:"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="12sp"
-                android:alpha="0.8"
-                app:layout_constraintBottom_toTopOf="@+id/tvLimiteValor"
-                app:layout_constraintStart_toStartOf="parent" />
+        <!-- Valor del Límite -->
+        <TextView
+            android:id="@+id/tvLimiteValor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="$8,600.00" />
 
-            <!-- Valor del Límite -->
-            <TextView
-                android:id="@+id/tvLimiteValor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:text="$8,600.00" />
+        <!-- Uso Reportado -->
+        <TextView
+            android:id="@+id/tvUso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Uso: 10%" />
 
-            <!-- Uso Reportado -->
-            <TextView
-                android:id="@+id/tvUso"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:text="Uso: 10%" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-</com.google.android.material.carousel.MaskableFrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
