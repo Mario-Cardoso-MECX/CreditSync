@@ -8,7 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- Contenedor de la pantalla principal -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,15 +20,16 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:titleTextColor="?attr/colorOnPrimary"
+            app:navigationIconTint="?attr/colorOnPrimary"
             app:title="CreditSync" />
 
         <!-- Carrusel de Tarjetas Apiladas (Efecto Mazo / Stack 3D) -->
+        <!-- AJUSTE: Añadido marginTop de 24dp para despegarlo de la barra -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vpTarjetas"
             android:layout_width="match_parent"
             android:layout_height="220dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="24dp"
             android:clipToPadding="false"
             android:clipChildren="false"
             android:paddingStart="40dp"
@@ -105,7 +105,7 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Tarjeta 2: Fechas y Cantidades (La magia matemática) -->
+                <!-- Tarjeta 2: Fechas y Cantidades -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
