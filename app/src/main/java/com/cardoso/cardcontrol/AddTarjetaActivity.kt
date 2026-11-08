@@ -5,6 +5,10 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.drawable.LayerDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,7 +24,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cardoso.cardcontrol.databinding.ActivityAddTarjetaBinding
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
+import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.util.Calendar
 import java.util.Locale
 
 class AddTarjetaActivity : AppCompatActivity() {
@@ -29,10 +36,15 @@ class AddTarjetaActivity : AppCompatActivity() {
     private var isFlipped = false
     private var colorSeleccionado = "#6750A4"
 
+    // Calcula cuántos días tiene el mes actual real (28, 29, 30 o 31)
+    private val diasDelMesActual: Int by lazy {
+        val calendar = Calendar.getInstance()
+        calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ESTO EVITA QUE LA TARJETA SE SUBA AL ABRIR EL TECLADO (El secreto de la UX fija)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         binding = ActivityAddTarjetaBinding.inflate(layoutInflater)
@@ -55,50 +67,81 @@ class AddTarjetaActivity : AppCompatActivity() {
             val fecha = binding.etFecha.text.toString()
             val cvv = binding.etCvc.text.toString()
 
-            if (numero.isEmpty() || binding.etBanco.text.isNullOrEmpty() || binding.etLimite.text.isNullOrEmpty()) {
-                mostrarAlerta("⚠️ Llena todos los campos clave", false)
-                return@setOnClickListener
-            }
+            // Validaciones silenciosas del backend
+            val banco = binding.etBanco.text.toString()
+            val limite = binding.etLimite.text.toString()
+            val nombre = binding.etNombre.text.toString()
+            val corte = binding.etDiaCorte.text.toString().toIntOrNull() ?: 0
+            val pago = binding.etDiaPago.text.toString().toIntOrNull() ?: 0
 
-            if (!validarAlgoritmoLuhn(numero)) {
-                binding.etNumero.error = "Número inválido"
-                mostrarAlerta("❌ La tarjeta no existe (Error de algoritmo)", false)
-                return@setOnClickListener
-            }
+            val bancoEsValido = validarBancoFuturo(banco)
+            val limiteEsValido = validarScoreCrediticioFuturo(limite)
+            val nombreEsValido = validarNombreLetras(nombre)
 
-            if (!validarFecha(fecha)) {
-                binding.etFecha.error = "Fecha incorrecta o vencida"
-                mostrarAlerta("❌ Revisa la fecha de vencimiento", false)
-                return@setOnClickListener
-            }
+            val esValido = validarAlgoritmoLuhn(numero) &&
+                    validarFecha(fecha) &&
+                    cvv.length == 3 &&
+                    bancoEsValido &&
+                    limiteEsValido &&
+                    nombreEsValido &&
+                    corte in 1..diasDelMesActual &&
+                    pago in 1..diasDelMesActual
 
-            if (cvv.length < 3) {
-                binding.etCvc.error = "Faltan dígitos"
-                mostrarAlerta("❌ El CVV está incompleto", false)
-                return@setOnClickListener
+            if (esValido) {
+                mostrarAlertaElegante("✅ Tarjeta lista. Guardando...")
+                // PRÓXIMAMENTE: Base de Datos Room
+                Handler(Looper.getMainLooper()).postDelayed({ finish() }, 1200)
             }
+        }
+    }
 
-            mostrarAlerta("✅ Tarjeta procesada y válida. Guardando...", true)
-            // PRÓXIMAMENTE: ¡Guardar en la Base de Datos Local Room!
-            Handler(Looper.getMainLooper()).postDelayed({ finish() }, 1200)
+    // --- CREADOR DE PUNTITOS NEÓN ---
+    private fun crearPuntitoNeon(esValido: Boolean): LayerDrawable {
+        val scale = resources.displayMetrics.density
+        val size = (16 * scale).toInt()
+        val glowPadding = (4 * scale).toInt()
+
+        val colorFuerte = if (esValido) Color.parseColor("#00E676") else Color.parseColor("#FF1744")
+        val colorBrillo = if (esValido) Color.parseColor("#3300E676") else Color.parseColor("#33FF1744")
+
+        // El halo luminoso (borde neón)
+        val glowShape = ShapeDrawable(OvalShape())
+        glowShape.intrinsicWidth = size + glowPadding
+        glowShape.intrinsicHeight = size + glowPadding
+        glowShape.paint.color = colorBrillo
+        glowShape.paint.style = Paint.Style.FILL
+
+        // El punto sólido central
+        val coreShape = ShapeDrawable(OvalShape())
+        coreShape.intrinsicWidth = size - glowPadding
+        coreShape.intrinsicHeight = size - glowPadding
+        coreShape.paint.color = colorFuerte
+        coreShape.paint.style = Paint.Style.FILL
+
+        val layer = LayerDrawable(arrayOf(glowShape, coreShape))
+        layer.setLayerInset(1, glowPadding, glowPadding, glowPadding, glowPadding)
+        return layer
+    }
+
+    private fun actualizarEstadoValidacion(layout: TextInputLayout, texto: String, isValid: Boolean) {
+        if (texto.isEmpty()) {
+            layout.endIconMode = TextInputLayout.END_ICON_NONE
+        } else {
+            layout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+            layout.endIconDrawable = crearPuntitoNeon(isValid)
+            layout.setEndIconTintList(null) // Quitamos el tinte para que el neón brille con sus colores reales
         }
     }
 
     private fun configurarUXyValidaciones() {
+
+        // CAMPOS CON PUNTITO NEÓN VISIBLE
         binding.etNumero.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val num = s.toString()
                 val formateado = num.chunked(4).joinToString(" ")
                 binding.tvPreviewNumero.text = if (num.isEmpty()) "•••• •••• •••• ••••" else formateado
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        binding.etNombre.filters = arrayOf(InputFilter.AllCaps())
-        binding.etNombre.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                binding.tvPreviewNombre.text = if (s.isNullOrEmpty()) "NOMBRE DEL TITULAR" else s.toString()
+                actualizarEstadoValidacion(binding.tilNumero, num, validarAlgoritmoLuhn(num))
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -116,6 +159,8 @@ class AddTarjetaActivity : AppCompatActivity() {
                 binding.etFecha.setText(texto)
                 binding.etFecha.setSelection(texto.length)
                 binding.tvPreviewFecha.text = if (texto.isEmpty()) "MM/AA" else texto
+
+                actualizarEstadoValidacion(binding.tilFecha, texto, validarFecha(texto))
                 isUpdating = false
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -124,7 +169,46 @@ class AddTarjetaActivity : AppCompatActivity() {
 
         binding.etCvc.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                binding.tvPreviewCvc.text = if (s.isNullOrEmpty()) "•••" else s.toString()
+                val texto = s.toString()
+                binding.tvPreviewCvc.text = if (texto.isEmpty()) "•••" else texto
+                actualizarEstadoValidacion(binding.tilCvc, texto, texto.length == 3)
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        binding.etDiaCorte.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val texto = s.toString()
+                binding.tvPreviewCorte.text = if (texto.isEmpty()) "--" else texto
+                val num = texto.toIntOrNull() ?: 0
+                // Valida contra los días reales del mes actual
+                actualizarEstadoValidacion(binding.tilDiaCorte, texto, num in 1..diasDelMesActual)
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        binding.etDiaPago.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val texto = s.toString()
+                binding.tvPreviewPago.text = if (texto.isEmpty()) "--" else texto
+                val num = texto.toIntOrNull() ?: 0
+                // Valida contra los días reales del mes actual
+                actualizarEstadoValidacion(binding.tilDiaPago, texto, num in 1..diasDelMesActual)
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        // CAMPOS CON VALIDACIÓN INVISIBLE (Sin puntito neón)
+        binding.etNombre.filters = arrayOf(InputFilter.AllCaps())
+        binding.etNombre.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val texto = s.toString()
+                binding.tvPreviewNombre.text = if (texto.isEmpty()) "NOMBRE DEL TITULAR" else texto
+                // Valida silenciosamente
+                val esValido = validarNombreLetras(texto)
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -132,13 +216,15 @@ class AddTarjetaActivity : AppCompatActivity() {
 
         binding.etBanco.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                binding.tvPreviewBanco.text = if (s.isNullOrEmpty()) "MI BANCO" else s.toString().uppercase()
+                val texto = s.toString().uppercase()
+                binding.tvPreviewBanco.text = if (texto.isEmpty()) "BANCO" else texto
+                // Valida silenciosamente
+                val esValido = validarBancoFuturo(texto)
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // EL FORMATEADOR ESTILO CAJERO AUTOMÁTICO (Escribes y pone comas/moneda solo)
         binding.etLimite.addTextChangedListener(object : TextWatcher {
             private var current = ""
             override fun afterTextChanged(s: Editable?) {
@@ -153,6 +239,9 @@ class AddTarjetaActivity : AppCompatActivity() {
                         binding.etLimite.setText(formatted)
                         binding.etLimite.setSelection(formatted.length)
                         binding.tvPreviewLimiteValor.text = formatted
+
+                        // Valida silenciosamente el score financiero
+                        val esValido = validarScoreCrediticioFuturo(cleanString)
                     } else {
                         current = ""
                         binding.etLimite.setText("")
@@ -166,6 +255,25 @@ class AddTarjetaActivity : AppCompatActivity() {
         })
     }
 
+    // --- MÉTODOS DE VALIDACIÓN FUTURA INVISIBLE ---
+
+    private fun validarNombreLetras(nombre: String): Boolean {
+        // Solo permite letras y espacios
+        val regex = "^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$".toRegex()
+        return nombre.trim().isNotEmpty() && nombre.matches(regex)
+    }
+
+    private fun validarBancoFuturo(banco: String): Boolean {
+        // TODO: A futuro aquí leeremos de un archivo o base de datos de bancos
+        return banco.trim().isNotEmpty()
+    }
+
+    private fun validarScoreCrediticioFuturo(limiteStr: String): Boolean {
+        // TODO: A futuro analizaremos el historial crediticio del usuario
+        return limiteStr.isNotEmpty()
+    }
+
+    // --- FUNCIONES VISUALES Y MATEMÁTICAS ---
     private fun configurarSelectorColores() {
         val clickListener = View.OnClickListener { view ->
             val colorHex = when (view.id) {
@@ -196,12 +304,12 @@ class AddTarjetaActivity : AppCompatActivity() {
 
     private fun mostrarPaletaColores() {
         val coloresPaleta = listOf(
-            listOf("#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3"),
+            listOf("#F44336", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5"),
             listOf("#03A9F4", "#00BCD4", "#009688", "#4CAF50", "#8BC34A"),
             listOf("#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722"),
-            listOf("#795548", "#9E9E9E", "#607D8B", "#212121", "#000000"),
+            listOf("#795548", "#9E9E9E", "#607D8B", "#455A64", "#37474F"),
             listOf("#D32F2F", "#C2185B", "#7B1FA2", "#303F9F", "#1976D2"),
-            listOf("#388E3C", "#FBC02D", "#E64A19", "#5D4037", "#455A64")
+            listOf("#388E3C", "#FBC02D", "#E64A19", "#5D4037", "#424242")
         )
 
         val contenedorPrincipal = LinearLayout(this).apply {
@@ -210,7 +318,7 @@ class AddTarjetaActivity : AppCompatActivity() {
         }
 
         val dialog = android.app.AlertDialog.Builder(this)
-            .setTitle("Selecciona el color")
+            .setTitle("Selecciona un color")
             .setView(contenedorPrincipal)
             .create()
 
@@ -230,7 +338,8 @@ class AddTarjetaActivity : AppCompatActivity() {
                     }
                     setCardBackgroundColor(Color.parseColor(colorHex))
                     radius = (22 * scale)
-                    strokeWidth = 0
+                    strokeWidth = (1 * scale).toInt()
+                    strokeColor = Color.parseColor("#33FFFFFF")
                     setOnClickListener {
                         aplicarColorFondo(colorHex)
                         dialog.dismiss()
@@ -273,12 +382,10 @@ class AddTarjetaActivity : AppCompatActivity() {
         anim1.start()
     }
 
-    private fun mostrarAlerta(mensaje: String, esExito: Boolean) {
+    private fun mostrarAlertaElegante(mensaje: String) {
         val snackbar = Snackbar.make(binding.root, mensaje, Snackbar.LENGTH_SHORT)
         snackbar.duration = 1500
-        val colorFondo = if (esExito) Color.parseColor("#4CAF50") else Color.parseColor("#F44336")
-
-        snackbar.view.backgroundTintList = ColorStateList.valueOf(colorFondo)
+        snackbar.view.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
         snackbar.setTextColor(Color.WHITE)
         snackbar.show()
     }
