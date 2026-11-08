@@ -15,20 +15,21 @@ import com.cardoso.cardcontrol.databinding.ActivityAddTarjetaBinding
 class AddTarjetaActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddTarjetaBinding
-    private var isFlipped = false // Saber si estamos viendo la parte de atrás
+    private var isFlipped = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddTarjetaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Botón regresar
+        // CONFIGURACIÓN SEGURA DEL BOTÓN REGRESAR EN LA BARRA
+        setSupportActionBar(binding.toolbarAdd)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbarAdd.setNavigationOnClickListener { finish() }
 
-        // Alejar la "cámara" virtual de Android para que el giro 3D no se recorte
-        val cameraDist = 8000 * resources.displayMetrics.density
-        binding.cardFrente.cameraDistance = cameraDist
-        binding.cardAtras.cameraDistance = cameraDist
+        val scale = resources.displayMetrics.density
+        binding.cardFrente.cameraDistance = 8000 * scale
+        binding.cardAtras.cameraDistance = 8000 * scale
 
         configurarEfectoEspejoTextos()
         configurarGiroAlTocarCVC()
@@ -37,7 +38,7 @@ class AddTarjetaActivity : AppCompatActivity() {
             val numero = binding.etNumero.text.toString()
             if (validarAlgoritmoLuhn(numero)) {
                 Toast.makeText(this, "✅ Tarjeta Válida", Toast.LENGTH_SHORT).show()
-                // Aquí en el futuro la guardaremos en la base de datos (Room)
+                finish()
             } else {
                 binding.etNumero.error = "Número de tarjeta inválido"
                 Toast.makeText(this, "❌ La tarjeta no existe", Toast.LENGTH_SHORT).show()
@@ -46,7 +47,6 @@ class AddTarjetaActivity : AppCompatActivity() {
     }
 
     private fun configurarEfectoEspejoTextos() {
-        // Todo lo que escribas abajo, se dibuja en la tarjeta arriba en tiempo real
         binding.etNumero.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 binding.tvPreviewNumero.text = if (s.isNullOrEmpty()) "•••• •••• •••• ••••" else s.toString()
@@ -76,26 +76,23 @@ class AddTarjetaActivity : AppCompatActivity() {
         binding.etCvc.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && !isFlipped) {
                 girarTarjeta(mostrarAtras = true)
-                isFlipped = true
             } else if (!hasFocus && isFlipped) {
                 girarTarjeta(mostrarAtras = false)
-                isFlipped = false
             }
         }
     }
 
     private fun girarTarjeta(mostrarAtras: Boolean) {
+        isFlipped = mostrarAtras
         val vistaVisible = if (mostrarAtras) binding.cardFrente else binding.cardAtras
         val vistaOculta = if (mostrarAtras) binding.cardAtras else binding.cardFrente
 
-        // Animación 1: Girar la vista actual 90 grados (hasta ponerla de filo)
         val anim1 = ObjectAnimator.ofFloat(vistaVisible, "rotationY", 0f, 90f)
-        anim1.duration = 150
+        anim1.duration = 200
         anim1.interpolator = AccelerateDecelerateInterpolator()
 
-        // Animación 2: Girar la otra vista desde -90 grados (de filo) hasta 0
         val anim2 = ObjectAnimator.ofFloat(vistaOculta, "rotationY", -90f, 0f)
-        anim2.duration = 150
+        anim2.duration = 200
         anim2.interpolator = AccelerateDecelerateInterpolator()
 
         anim1.addListener(object : AnimatorListenerAdapter() {
@@ -108,7 +105,6 @@ class AddTarjetaActivity : AppCompatActivity() {
         anim1.start()
     }
 
-    // El famoso Algoritmo de Luhn que usan Visa/Mastercard/Amex para verificar si la tarjeta es falsa
     private fun validarAlgoritmoLuhn(cardNumber: String): Boolean {
         if (cardNumber.length < 13) return false
         var sum = 0
