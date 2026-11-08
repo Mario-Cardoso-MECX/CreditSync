@@ -13,13 +13,15 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.cardoso.cardcontrol.databinding.ActivityAddTarjetaBinding
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
-import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.Locale
 
 class AddTarjetaActivity : AppCompatActivity() {
 
@@ -29,6 +31,10 @@ class AddTarjetaActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ESTO EVITA QUE LA TARJETA SE SUBA AL ABRIR EL TECLADO (El secreto de la UX fija)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
         binding = ActivityAddTarjetaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -67,12 +73,12 @@ class AddTarjetaActivity : AppCompatActivity() {
             }
 
             if (cvv.length < 3) {
-                binding.etCvc.error = "Debe tener 3 o 4 dígitos"
+                binding.etCvc.error = "Faltan dígitos"
                 mostrarAlerta("❌ El CVV está incompleto", false)
                 return@setOnClickListener
             }
 
-            mostrarAlerta("✅ Tarjeta encriptada y válida. Guardando...", true)
+            mostrarAlerta("✅ Tarjeta procesada y válida. Guardando...", true)
             // PRÓXIMAMENTE: ¡Guardar en la Base de Datos Local Room!
             Handler(Looper.getMainLooper()).postDelayed({ finish() }, 1200)
         }
@@ -89,7 +95,6 @@ class AddTarjetaActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // El usuario pidió quitar la restricción, pero dejamos AllCaps para que se vea como plástico real
         binding.etNombre.filters = arrayOf(InputFilter.AllCaps())
         binding.etNombre.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -133,19 +138,27 @@ class AddTarjetaActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // Enlace del Límite con la vista en vivo
+        // EL FORMATEADOR ESTILO CAJERO AUTOMÁTICO (Escribes y pone comas/moneda solo)
         binding.etLimite.addTextChangedListener(object : TextWatcher {
+            private var current = ""
             override fun afterTextChanged(s: Editable?) {
-                val texto = s.toString()
-                if (texto.isNotEmpty()) {
-                    try {
-                        val format = DecimalFormat("$#,###.00")
-                        binding.tvPreviewLimiteValor.text = format.format(texto.toDouble())
-                    } catch (e: Exception) {
+                if (s.toString() != current) {
+                    binding.etLimite.removeTextChangedListener(this)
+                    val cleanString = s.toString().replace(Regex("[^\\d]"), "")
+
+                    if (cleanString.isNotEmpty()) {
+                        val parsed = cleanString.toDouble()
+                        val formatted = NumberFormat.getCurrencyInstance(Locale.US).format(parsed / 100)
+                        current = formatted
+                        binding.etLimite.setText(formatted)
+                        binding.etLimite.setSelection(formatted.length)
+                        binding.tvPreviewLimiteValor.text = formatted
+                    } else {
+                        current = ""
+                        binding.etLimite.setText("")
                         binding.tvPreviewLimiteValor.text = "$0.00"
                     }
-                } else {
-                    binding.tvPreviewLimiteValor.text = "$0.00"
+                    binding.etLimite.addTextChangedListener(this)
                 }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -170,7 +183,6 @@ class AddTarjetaActivity : AppCompatActivity() {
         binding.colorMp.setOnClickListener(clickListener)
         binding.colorRappi.setOnClickListener(clickListener)
 
-        // Botón para abrir la paleta de colores personalizada
         binding.btnColorCustom.setOnClickListener {
             mostrarPaletaColores()
         }
@@ -182,29 +194,29 @@ class AddTarjetaActivity : AppCompatActivity() {
         binding.cardAtras.setCardBackgroundColor(Color.parseColor(colorHex))
     }
 
-    // EL DIÁLOGO VISUAL DE LA PALETA DE COLORES
     private fun mostrarPaletaColores() {
-        // Una lista de colores vibrantes tipo material design
         val coloresPaleta = listOf(
-            listOf("#E91E63", "#9C27B0", "#3F51B5", "#2196F3"),
-            listOf("#00BCD4", "#009688", "#4CAF50", "#8BC34A"),
-            listOf("#FFEB3B", "#FFC107", "#FF9800", "#FF5722"),
-            listOf("#795548", "#9E9E9E", "#607D8B", "#212121")
+            listOf("#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3"),
+            listOf("#03A9F4", "#00BCD4", "#009688", "#4CAF50", "#8BC34A"),
+            listOf("#CDDC39", "#FFEB3B", "#FFC107", "#FF9800", "#FF5722"),
+            listOf("#795548", "#9E9E9E", "#607D8B", "#212121", "#000000"),
+            listOf("#D32F2F", "#C2185B", "#7B1FA2", "#303F9F", "#1976D2"),
+            listOf("#388E3C", "#FBC02D", "#E64A19", "#5D4037", "#455A64")
         )
 
         val contenedorPrincipal = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(32, 32, 32, 32)
+            setPadding(16, 32, 16, 32)
         }
 
         val dialog = android.app.AlertDialog.Builder(this)
-            .setTitle("Selecciona el color de tu tarjeta")
+            .setTitle("Selecciona el color")
             .setView(contenedorPrincipal)
             .create()
 
         val scale = resources.displayMetrics.density
-        val size = (50 * scale).toInt()
-        val margin = (8 * scale).toInt()
+        val size = (45 * scale).toInt()
+        val margin = (6 * scale).toInt()
 
         for (fila in coloresPaleta) {
             val filaLayout = LinearLayout(this).apply {
@@ -217,7 +229,7 @@ class AddTarjetaActivity : AppCompatActivity() {
                         setMargins(margin, margin, margin, margin)
                     }
                     setCardBackgroundColor(Color.parseColor(colorHex))
-                    radius = (25 * scale) // Lo hace completamente redondo
+                    radius = (22 * scale)
                     strokeWidth = 0
                     setOnClickListener {
                         aplicarColorFondo(colorHex)
@@ -289,14 +301,13 @@ class AddTarjetaActivity : AppCompatActivity() {
     }
 
     private fun validarFecha(fecha: String): Boolean {
-        if (fecha.length != 5) return false // Debe ser MM/AA
+        if (fecha.length != 5) return false
         val parts = fecha.split("/")
         if (parts.size != 2) return false
 
         val mes = parts[0].toIntOrNull() ?: return false
         val anio = parts[1].toIntOrNull() ?: return false
 
-        // Verifica que el mes sea válido y que no esté vencida (Año 24 en adelante)
         if (mes !in 1..12) return false
         if (anio < 24) return false
 

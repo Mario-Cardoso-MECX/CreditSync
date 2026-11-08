@@ -18,20 +18,18 @@
         app:navigationIconTint="?attr/colorOnPrimary"
         app:title="Agregar Tarjeta" />
 
-    <!-- BLOQUE 1: FIJO ARRIBA (Tarjeta y Colores) -->
+    <!-- BLOQUE 1: FIJO ARRIBA (La tarjeta JAMÁS se moverá de aquí) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- CONTENEDOR DE LA TARJETA -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="220dp"
             android:layout_marginBottom="16dp">
 
-            <!-- CARA FRONTAL -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardFrente"
                 android:layout_width="320dp"
@@ -59,13 +57,30 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.card.MaterialCardView
-                        android:layout_width="40dp"
-                        android:layout_height="30dp"
-                        app:cardBackgroundColor="#FFD700"
+                        android:layout_width="42dp"
+                        android:layout_height="32dp"
+                        app:cardBackgroundColor="#F4D03F"
                         app:cardCornerRadius="6dp"
-                        app:strokeWidth="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="#B7950B"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+                            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#66000000" android:layout_marginTop="10dp" />
+                            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#66000000" android:layout_marginTop="20dp" />
+                            <View android:layout_width="1dp" android:layout_height="match_parent" android:background="#66000000" android:layout_centerHorizontal="true" />
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="16dp"
+                                android:layout_height="22dp"
+                                android:layout_centerInParent="true"
+                                app:cardBackgroundColor="#F4D03F"
+                                app:strokeWidth="1dp"
+                                app:strokeColor="#66000000"
+                                app:cardCornerRadius="8dp" />
+                        </RelativeLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <TextView
                         android:id="@+id/tvPreviewNumero"
@@ -73,8 +88,8 @@
                         android:layout_height="wrap_content"
                         android:text="•••• •••• •••• ••••"
                         android:textColor="#FFFFFF"
-                        android:textSize="24sp"
-                        android:letterSpacing="0.1"
+                        android:textSize="20sp"
+                        android:letterSpacing="0.05"
                         app:layout_constraintBottom_toTopOf="@+id/tvPreviewNombre"
                         app:layout_constraintTop_toBottomOf="@+id/tvPreviewBanco" />
 
@@ -90,7 +105,6 @@
                         app:layout_constraintBottom_toTopOf="@+id/tvPreviewLimiteEtiqueta"
                         app:layout_constraintStart_toStartOf="parent" />
 
-                    <!-- Agregados los campos de Límite como en el Carrusel -->
                     <TextView
                         android:id="@+id/tvPreviewLimiteEtiqueta"
                         android:layout_width="wrap_content"
@@ -124,7 +138,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- CARA TRASERA -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardAtras"
                 android:layout_width="320dp"
@@ -135,15 +148,12 @@
                 app:cardCornerRadius="16dp"
                 app:cardElevation="8dp"
                 app:strokeWidth="0dp">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:paddingTop="24dp">
-
                     <View android:layout_width="match_parent" android:layout_height="40dp" android:background="#222222" />
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
@@ -152,7 +162,6 @@
                         android:background="#DDDDDD"
                         android:gravity="center_vertical|end"
                         android:paddingEnd="12dp">
-
                         <TextView
                             android:id="@+id/tvPreviewCvc"
                             android:layout_width="wrap_content"
@@ -187,8 +196,6 @@
                 <com.google.android.material.card.MaterialCardView android:id="@+id/colorKlar" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#000000" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
                 <com.google.android.material.card.MaterialCardView android:id="@+id/colorMp" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#009EE3" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
                 <com.google.android.material.card.MaterialCardView android:id="@+id/colorRappi" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#FF4000" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
-
-                <!-- Botón de Paleta de Colores Personalizada -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnColorCustom"
                     android:layout_width="40dp"
@@ -208,7 +215,7 @@
         </HorizontalScrollView>
     </LinearLayout>
 
-    <!-- BLOQUE 2: SCROLL DE CAMPOS DE TEXTO -->
+    <!-- BLOQUE 2: SCROLL DE CAMPOS DE TEXTO (Solo se mueve esto con el teclado) -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -221,7 +228,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingHorizontal="16dp"
-            android:paddingBottom="24dp">
+            android:paddingBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -246,13 +253,14 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Límite de Crédito ($)"
+                android:hint="Límite de Crédito"
                 android:layout_marginBottom="12dp">
+                <!-- Cambiado a number para evitar que ingresen símbolos raros, el Kotlin lo formatea -->
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etLimite"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal" />
+                    android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -264,7 +272,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="Día de Corte (1-31)"
+                    android:hint="Día de Corte (Ej. 15)"
                     android:layout_marginEnd="8dp">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etDiaCorte"
@@ -277,7 +285,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="Día de Pago (1-31)"
+                    android:hint="Día Límite de Pago (Ej. 5)"
                     android:layout_marginStart="8dp">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etDiaPago"
