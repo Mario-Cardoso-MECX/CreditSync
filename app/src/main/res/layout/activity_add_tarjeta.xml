@@ -14,133 +14,286 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         app:titleTextColor="?attr/colorOnPrimary"
+        app:navigationIcon="@android:drawable/ic_menu_revert"
+        app:navigationIconTint="?attr/colorOnPrimary"
         app:title="Agregar Tarjeta" />
 
+    <!-- BLOQUE 1: FIJO ARRIBA (Tarjeta y Colores) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- CONTENEDOR DE LA TARJETA -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginBottom="16dp">
+
+            <!-- CARA FRONTAL -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardFrente"
+                android:layout_width="320dp"
+                android:layout_height="190dp"
+                android:layout_gravity="center"
+                app:cardBackgroundColor="?attr/colorPrimary"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvPreviewBanco"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MI BANCO"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="40dp"
+                        android:layout_height="30dp"
+                        app:cardBackgroundColor="#FFD700"
+                        app:cardCornerRadius="6dp"
+                        app:strokeWidth="0dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPreviewNumero"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="•••• •••• •••• ••••"
+                        android:textColor="#FFFFFF"
+                        android:textSize="24sp"
+                        android:letterSpacing="0.1"
+                        app:layout_constraintBottom_toTopOf="@+id/tvPreviewNombre"
+                        app:layout_constraintTop_toBottomOf="@+id/tvPreviewBanco" />
+
+                    <TextView
+                        android:id="@+id/tvPreviewNombre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NOMBRE DEL TITULAR"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toTopOf="@+id/tvPreviewLimiteEtiqueta"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <!-- Agregados los campos de Límite como en el Carrusel -->
+                    <TextView
+                        android:id="@+id/tvPreviewLimiteEtiqueta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Límite:"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:alpha="0.8"
+                        app:layout_constraintBottom_toTopOf="@+id/tvPreviewLimiteValor"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPreviewLimiteValor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$0.00"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvPreviewFecha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MM/AA"
+                        android:textColor="#FFFFFF"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- CARA TRASERA -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardAtras"
+                android:layout_width="320dp"
+                android:layout_height="190dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:cardBackgroundColor="?attr/colorPrimary"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="8dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:paddingTop="24dp">
+
+                    <View android:layout_width="match_parent" android:layout_height="40dp" android:background="#222222" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginHorizontal="16dp"
+                        android:background="#DDDDDD"
+                        android:gravity="center_vertical|end"
+                        android:paddingEnd="12dp">
+
+                        <TextView
+                            android:id="@+id/tvPreviewCvc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="•••"
+                            android:textColor="#000000"
+                            android:textStyle="bold"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Color de la Tarjeta"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingBottom="4dp">
+                <com.google.android.material.card.MaterialCardView android:id="@+id/colorNu" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#8A05BE" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
+                <com.google.android.material.card.MaterialCardView android:id="@+id/colorKlar" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#000000" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
+                <com.google.android.material.card.MaterialCardView android:id="@+id/colorMp" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#009EE3" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
+                <com.google.android.material.card.MaterialCardView android:id="@+id/colorRappi" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#FF4000" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
+
+                <!-- Botón de Paleta de Colores Personalizada -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnColorCustom"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="12dp"
+                    app:cardBackgroundColor="#E0E0E0"
+                    app:cardCornerRadius="20dp"
+                    app:strokeWidth="0dp">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:src="@android:drawable/ic_menu_add"
+                        app:tint="#424242" />
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <!-- BLOQUE 2: SCROLL DE CAMPOS DE TEXTO -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="24dp">
 
-            <!-- CONTENEDOR DE LA TARJETA QUE VA A GIRAR -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:layout_marginBottom="24dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Datos de la tarjeta"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                android:layout_marginBottom="12dp"/>
 
-                <!-- CARA FRONTAL -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardFrente"
-                    android:layout_width="320dp"
-                    android:layout_height="190dp"
-                    android:layout_gravity="center"
-                    app:cardBackgroundColor="?attr/colorPrimary"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="8dp"
-                    app:strokeWidth="0dp">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="20dp">
-
-                        <!-- CHIP SIMULADO CON UN CUADRO DORADO (No crashea jamás) -->
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="40dp"
-                            android:layout_height="30dp"
-                            app:cardBackgroundColor="#FFD700"
-                            app:cardCornerRadius="6dp"
-                            app:strokeWidth="0dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/tvPreviewNumero"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="•••• •••• •••• ••••"
-                            android:textColor="#FFFFFF"
-                            android:textSize="24sp"
-                            android:letterSpacing="0.1"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <TextView
-                            android:id="@+id/tvPreviewNombre"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="NOMBRE DEL TITULAR"
-                            android:textColor="#FFFFFF"
-                            android:textStyle="bold"
-                            android:textAllCaps="true"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-
-                        <TextView
-                            android:id="@+id/tvPreviewFecha"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="MM/AA"
-                            android:textColor="#FFFFFF"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- CARA TRASERA (Oculta por defecto) -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardAtras"
-                    android:layout_width="320dp"
-                    android:layout_height="190dp"
-                    android:layout_gravity="center"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="?attr/colorPrimary"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="8dp"
-                    app:strokeWidth="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:paddingTop="24dp">
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:background="#222222" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="40dp"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginHorizontal="16dp"
-                            android:background="#DDDDDD"
-                            android:gravity="center_vertical|end"
-                            android:paddingEnd="12dp">
-
-                            <TextView
-                                android:id="@+id/tvPreviewCvc"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="•••"
-                                android:textColor="#000000"
-                                android:textStyle="bold"
-                                android:textSize="18sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
-
-            <!-- CAMPOS DE TEXTO -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Número de Tarjeta (16 dígitos)"
+                android:hint="Banco"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBanco"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Límite de Crédito ($)"
+                android:layout_marginBottom="12dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLimite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Día de Corte (1-31)"
+                    android:layout_marginEnd="8dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etDiaCorte"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLength="2" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Día de Pago (1-31)"
+                    android:layout_marginStart="8dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etDiaPago"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLength="2" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#33888888" android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Número de Tarjeta"
                 android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etNumero"
@@ -167,7 +320,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginBottom="24dp">
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -181,7 +333,6 @@
                         android:inputType="number"
                         android:maxLength="5" />
                 </com.google.android.material.textfield.TextInputLayout>
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
