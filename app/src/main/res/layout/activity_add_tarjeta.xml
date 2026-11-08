@@ -236,10 +236,14 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingBottom="4dp">
-                <com.google.android.material.card.MaterialCardView android:id="@+id/colorNu" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#8A05BE" app:cardCornerRadius="20dp" app:strokeWidth="1dp" app:strokeColor="#33FFFFFF"/>
-                <com.google.android.material.card.MaterialCardView android:id="@+id/colorKlar" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#000000" app:cardCornerRadius="20dp" app:strokeWidth="1dp" app:strokeColor="#33FFFFFF"/>
-                <com.google.android.material.card.MaterialCardView android:id="@+id/colorMp" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#009EE3" app:cardCornerRadius="20dp" app:strokeWidth="1dp" app:strokeColor="#33FFFFFF"/>
-                <com.google.android.material.card.MaterialCardView android:id="@+id/colorRappi" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#FF4000" app:cardCornerRadius="20dp" app:strokeWidth="1dp" app:strokeColor="#33FFFFFF"/>
+
+                <!-- Sin stroke (bordes) para que no se hagan pequeñas -->
+                <com.google.android.material.card.MaterialCardView android:id="@+id/colorNu" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#8A05BE" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
+                <com.google.android.material.card.MaterialCardView android:id="@+id/colorKlar" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#000000" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
+                <com.google.android.material.card.MaterialCardView android:id="@+id/colorMp" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#009EE3" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
+                <com.google.android.material.card.MaterialCardView android:id="@+id/colorRappi" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginEnd="12dp" app:cardBackgroundColor="#FF4000" app:cardCornerRadius="20dp" app:strokeWidth="0dp"/>
+
+                <!-- El botón de "+" sí conserva su borde sutil gris -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnColorCustom"
                     android:layout_width="40dp"

@@ -36,12 +36,6 @@ class AddTarjetaActivity : AppCompatActivity() {
     private var isFlipped = false
     private var colorSeleccionado = "#6750A4"
 
-    // Calcula cuántos días tiene el mes actual real (28, 29, 30 o 31)
-    private val diasDelMesActual: Int by lazy {
-        val calendar = Calendar.getInstance()
-        calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -84,8 +78,8 @@ class AddTarjetaActivity : AppCompatActivity() {
                     bancoEsValido &&
                     limiteEsValido &&
                     nombreEsValido &&
-                    corte in 1..diasDelMesActual &&
-                    pago in 1..diasDelMesActual
+                    corte in 1..31 &&
+                    pago in 1..31
 
             if (esValido) {
                 mostrarAlertaElegante("✅ Tarjeta lista. Guardando...")
@@ -182,8 +176,8 @@ class AddTarjetaActivity : AppCompatActivity() {
                 val texto = s.toString()
                 binding.tvPreviewCorte.text = if (texto.isEmpty()) "--" else texto
                 val num = texto.toIntOrNull() ?: 0
-                // Valida contra los días reales del mes actual
-                actualizarEstadoValidacion(binding.tilDiaCorte, texto, num in 1..diasDelMesActual)
+                // Siempre validamos del 1 al 31, como dictan los contratos bancarios
+                actualizarEstadoValidacion(binding.tilDiaCorte, texto, num in 1..31)
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -194,8 +188,8 @@ class AddTarjetaActivity : AppCompatActivity() {
                 val texto = s.toString()
                 binding.tvPreviewPago.text = if (texto.isEmpty()) "--" else texto
                 val num = texto.toIntOrNull() ?: 0
-                // Valida contra los días reales del mes actual
-                actualizarEstadoValidacion(binding.tilDiaPago, texto, num in 1..diasDelMesActual)
+                // Siempre validamos del 1 al 31
+                actualizarEstadoValidacion(binding.tilDiaPago, texto, num in 1..31)
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
